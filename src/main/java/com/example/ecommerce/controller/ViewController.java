@@ -1,4 +1,3 @@
-
 package com.example.ecommerce.controller;
 
 import com.example.ecommerce.model.Cart;
@@ -25,7 +24,8 @@ public class ViewController {
 
     // ========================== Home Page ==========================
     @GetMapping("/")
-    public String home() {
+    public String home(Model model) {
+        model.addAttribute("products", productRepository.findAll());
         return "index";
     }
 
@@ -77,3 +77,4 @@ public class ViewController {
         return "profile";
     }
 }
+
