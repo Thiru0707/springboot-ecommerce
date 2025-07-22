@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Order History</title>
+</head>
+<body>
+<h2>My Orders</h2>
+
+<div th:if="${orders.size() == 0}">
+    <p>No orders placed yet.</p>
+</div>
+
+<table th:if="${orders.size() > 0}" border="1">
+    <tr>
+        <th>ID</th>
+        <th>Total</th>
+        <th>Payment ID</th>
+        <th>Date</th>
+        <th>Actions</th>
+    </tr>
+    <tr th:each="order : ${orders}">
+        <td th:text="${order.id}"></td>
+        <td th:text="${order.totalAmount}"></td>
+        <td th:text="${order.paymentId}"></td>
+        <td th:text="${#temporals.format(order.createdAt, 'dd-MM-yyyy HH:mm')}"></td>
+        <td><a th:href="@{'/orders/' + ${order.id}}">View</a></td>
+    </tr>
+</table>
+
+<a href="/">Back to Home</a>
+</body>
+</html>

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Products</title>
+</head>
+<body>
+    <h1>Product List</h1>
+
+    <!-- Search Form -->
+    <form th:action="@{/products}" method="get">
+        <input type="text" name="search" placeholder="Search products..." />
+        <button type="submit">Search</button>
+    </form>
+
+    <br/>
+
+    <ul>
+        <li th:each="p : ${products}">
+            <img th:src="${p.imagePath}" alt="Product" width="100" /> <br/>
+            <strong th:text="${p.name}">Product Name</strong> - ₹<span th:text="${p.price}">0</span><br/>
+
+            <form th:action="@{/admin/delete/{id}(id=${p.id})}" method="post" style="display:inline;">
+                <button type="submit">Delete</button>
+            </form>
+            <a th:href="@{/admin/edit/{id}(id=${p.id})}">Edit</a>
+            <hr/>
+        </li>
+    </ul>
+
+    <a href="/admin/add">Add New Product</a>
+</body>
+</html>

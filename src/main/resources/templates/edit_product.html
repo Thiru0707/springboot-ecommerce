@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Edit Product</title>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+
+        form {
+            margin-top: 20px;
+        }
+
+        input, button {
+            margin: 10px 0;
+            padding: 6px;
+        }
+
+        img {
+            margin: 10px 0;
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Edit Product</h1>
+
+<form th:action="@{/admin/edit/{id}(id=${product.id})}" method="post" enctype="multipart/form-data">
+    <label>
+        Name: <input type="text" name="name" th:value="${product.name}" required />
+    </label>
+    <br/>
+
+    <label>
+        Description: <input type="text" name="description" th:value="${product.description}" required />
+    </label>
+    <br/>
+
+    <label>
+        Price: <input type="number" name="price" th:value="${product.price}" step="0.01" min="0.01" required />
+    </label>
+    <br/>
+
+    <p>Current Image:</p>
+    <img th:src="${product.imagePath}" alt="product image" width="100"/>
+    <br/>
+
+    <label>
+        New Image: <input type="file" name="image" />
+    </label>
+    <br/>
+
+    <button type="submit">Update</button>
+</form>
+
+<br/>
+<a href="/products">Back to Products</a>
+
+</body>
+</html>

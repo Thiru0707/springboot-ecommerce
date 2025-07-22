@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Order Details</title>
+</head>
+<body>
+<h2>Order #<span th:text="${order.id}"></span></h2>
+
+<p><strong>Total:</strong> ₹<span th:text="${order.totalAmount}"></span></p>
+<p><strong>Payment ID:</strong> <span th:text="${order.paymentId}"></span></p>
+<p><strong>Date:</strong> <span th:text="${#temporals.format(order.createdAt, 'dd-MM-yyyy HH:mm')}"></span></p>
+
+<h3>Items:</h3>
+<table border="1">
+    <tr>
+        <th>Product</th>
+        <th>Quantity</th>
+        <th>Price</th>
+    </tr>
+    <tr th:each="item : ${order.orderItems}">
+        <td th:text="${item.product.name}"></td>
+        <td th:text="${item.quantity}"></td>
+        <td th:text="${item.price}"></td>
+    </tr>
+</table>
+
+<a href="/orders">Back to Order History</a>
+</body>
+</html>

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head></head>
+<body>
+<div th:fragment="navbar">
+    <nav style="background-color: #f8f9fa; padding: 1rem; display: flex; justify-content: space-between;">
+        <div>
+            <a href="/" style="font-weight: bold; margin-right: 1rem;">E-Commerce</a>
+            <a href="/products" style="margin-right: 1rem;">Products</a>
+            <a href="/cart" style="margin-right: 1rem;">Cart</a>
+            <a href="/orders" style="margin-right: 1rem;">Orders</a>
+
+            <!-- ✅ Show "Profile" only when logged in -->
+            <a th:if="${#authorization.expression('isAuthenticated()')}" href="/profile" style="margin-right: 1rem;">Profile</a>
+        </div>
+        <div>
+            <!-- ✅ Username as link to profile -->
+            <a th:if="${#authorization.expression('isAuthenticated()')}" href="/profile"
+               th:text="${#authentication.name}" style="margin-right: 1rem;"></a>
+
+            <a th:if="${#authorization.expression('isAuthenticated()')}" href="/logout" style="margin-right: 1rem;">Logout</a>
+            <a th:if="${#authorization.expression('!isAuthenticated()')}" href="/login" style="margin-right: 1rem;">Login</a>
+            <a th:if="${#authorization.expression('!isAuthenticated()')}" href="/register" style="margin-right: 1rem;">Register</a>
+        </div>
+    </nav>
+</div>
+</body>
+</html>
+ody>
+</html>
