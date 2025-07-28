@@ -2,10 +2,12 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Order Details</title>
+    <meta charset="UTF-8">
 </head>
 <body>
-<h2>Order #<span th:text="${order.id}"></span></h2>
+<div th:replace="fragments/navbar :: navbar"></div>
 
+<h2>Order #<span th:text="${order.id}"></span></h2>
 <p><strong>Total:</strong> ₹<span th:text="${order.totalAmount}"></span></p>
 <p><strong>Payment ID:</strong> <span th:text="${order.paymentId}"></span></p>
 <p><strong>Date:</strong> <span th:text="${#temporals.format(order.createdAt, 'dd-MM-yyyy HH:mm')}"></span></p>

@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><title>Payment Failed</title></head>
+<body>
+<div th:replace="fragments/navbar :: navbar"></div>
+<div class="container mt-4">
+    <h2>❌ Payment failed. Please try again.</h2>
+    <a href="/checkout" class="btn btn-primary">Retry Checkout</a>
+    <a href="/" class="btn btn-secondary">Home</a>
+</div>
+</body>
+</html>

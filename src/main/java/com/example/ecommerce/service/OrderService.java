@@ -5,7 +5,6 @@ import com.example.ecommerce.repository.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +17,7 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final OrderItemRepository orderItemRepository;
     private final CartItemRepository cartItemRepository;
+    private final UserService userService;  // ✅ added
 
     @Transactional
     public Order placeOrder(User user, String paymentId) {
@@ -33,14 +33,12 @@ public class OrderService {
                 .map(item -> item.getProduct().getPrice().multiply(BigDecimal.valueOf(item.getQuantity())))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        // Create and save the order first
         Order order = new Order();
         order.setUser(user);
         order.setPaymentId(paymentId);
         order.setTotalAmount(total);
-        orderRepository.save(order); // Now we don't reassign 'order'
+        orderRepository.save(order);
 
-        // Manually create order items (no lambda)
         List<OrderItem> orderItems = new ArrayList<>();
         for (CartItem cartItem : cartItems) {
             OrderItem orderItem = new OrderItem();
@@ -53,7 +51,6 @@ public class OrderService {
 
         orderItemRepository.saveAll(orderItems);
 
-        // Clear the cart
         cartItemRepository.deleteAll(cartItems);
 
         return order;
@@ -67,4 +64,10 @@ public class OrderService {
         return orderRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Order not found"));
     }
+
+    public List<Order> getOrdersForCurrentUser() {
+        User user = userService.getCurrentUser();
+        return orderRepository.findByUser(user);
+    }
 }
+

@@ -3,61 +3,58 @@
 <head>
     <title>Edit Product</title>
     <meta charset="UTF-8">
+    <link rel="stylesheet" th:href="@{/style.css}" />
     <style>
         body {
             font-family: Arial, sans-serif;
             padding: 20px;
         }
-
         form {
             margin-top: 20px;
+            max-width: 400px;
         }
-
         input, button {
+            width: 100%;
             margin: 10px 0;
-            padding: 6px;
+            padding: 8px;
         }
-
         img {
             margin: 10px 0;
             border: 1px solid #ccc;
+            max-width: 100px;
         }
     </style>
 </head>
 <body>
 
+<div th:replace="fragments/navbar :: navbar"></div>
+
 <h1>Edit Product</h1>
 
-<form th:action="@{/admin/edit/{id}(id=${product.id})}" method="post" enctype="multipart/form-data">
-    <label>
-        Name: <input type="text" name="name" th:value="${product.name}" required />
-    </label>
-    <br/>
+<form th:action="@{/admin/products/edit}" method="post" enctype="multipart/form-data" th:object="${product}">
+    <input type="hidden" th:field="*{id}"/>
 
-    <label>
-        Description: <input type="text" name="description" th:value="${product.description}" required />
-    </label>
-    <br/>
+    <label>Name:</label>
+    <input type="text" th:field="*{name}" required />
 
-    <label>
-        Price: <input type="number" name="price" th:value="${product.price}" step="0.01" min="0.01" required />
-    </label>
-    <br/>
+    <label>Description:</label>
+    <input type="text" th:field="*{description}" required />
+
+    <label>Price:</label>
+    <input type="number" th:field="*{price}" step="0.01" min="0.01" required />
 
     <p>Current Image:</p>
-    <img th:src="${product.imagePath}" alt="product image" width="100"/>
-    <br/>
+    <img th:src="@{${product.imagePath}}" alt="product image" />
 
-    <label>
-        New Image: <input type="file" name="image" />
-    </label>
-    <br/>
+    <label>New Image:</label>
+    <input type="file" name="image" />
 
     <button type="submit">Update</button>
 </form>
 
 <br/>
-<a href="/products">Back to Products</a>
+<a th:href="@{/admin/products}">← Back to Product List</a>
 
 </body>
 </html>
+

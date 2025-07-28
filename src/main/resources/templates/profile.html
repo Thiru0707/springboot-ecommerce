@@ -2,17 +2,19 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>My Profile</title>
-    <meta charset="UTF-8">
 </head>
 <body>
 <div th:replace="fragments/navbar :: navbar"></div>
-
-<div style="padding: 2rem;">
-    <h2>My Profile</h2>
-    <p><strong>Username:</strong> <span th:text="${user.username}"></span></p>
-    <p><strong>Email:</strong> <span th:text="${user.email}">email@example.com</span></p>
-    <!-- You can add more user fields here if needed -->
-</div>
-
+<h2>My Profile</h2>
+<form th:action="@{/profile/update}" method="post" th:object="${user}">
+    <label>Name:</label>
+    <input type="text" th:field="*{name}"/>
+    <br/>
+    <label>Email:</label>
+    <input type="email" th:field="*{email}"/>
+    <br/>
+    <button type="submit">Update</button>
+</form>
+<div th:if="${param.success}">Profile updated!</div>
 </body>
 </html>

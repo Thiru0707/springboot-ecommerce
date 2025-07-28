@@ -46,10 +46,14 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                .anyRequest().permitAll() // TEMP: permit everything for Railway health check
+                .requestMatchers(
+                    "/", "/auth/**", "/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**",
+                    "/products", "/api/**", "/uploads/**", "/register", "/login", "/css/**"
+                ).permitAll()
+                .requestMatchers("/admin/**").hasRole("ADMIN")
+                .anyRequest().authenticated()
             )
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
-
         return http.build();
     }
 }
