@@ -23,20 +23,20 @@ public class AdminProductController {
 
     private static final String UPLOAD_DIR = "src/main/resources/static/uploads/";
 
-    // ✅ Admin Dashboard
+    // ✅ Admin dashboard (shows all products)
     @GetMapping
-    public String adminDashboard() {
-        return "admin"; // templates/admin.html
+    public String adminDashboard(Model model) {
+        model.addAttribute("products", productService.getAllProducts());
+        return "admin_products";
     }
 
-    // ✅ Show Add Product Form
+    // ✅ Show add form
     @GetMapping("/add")
-    public String showAddProductForm(Model model) {
-        model.addAttribute("product", new Product());
-        return "addProduct"; // templates/addProduct.html
+    public String showAddProductForm() {
+        return "add_product";
     }
 
-    // ✅ Handle Add Product Submission with Image
+    // ✅ Handle add product
     @PostMapping("/add")
     public String handleAddProduct(
             @RequestParam String name,
@@ -49,7 +49,6 @@ public class AdminProductController {
         product.setDescription(description);
         product.setPrice(BigDecimal.valueOf(price));
 
-        // Handle image upload
         if (imageFile != null && !imageFile.isEmpty()) {
             try {
                 String fileName = System.currentTimeMillis() + "_" + imageFile.getOriginalFilename();
@@ -59,24 +58,23 @@ public class AdminProductController {
 
                 product.setImagePath("/uploads/" + fileName);
             } catch (IOException e) {
-                e.printStackTrace();
-                throw new RuntimeException("Failed to save image");
+                throw new RuntimeException("Failed to save image", e);
             }
         }
 
         productService.saveProduct(product);
-        return "redirect:/products";
+        return "redirect:/admin";
     }
 
-    // ✅ Show Edit Form
+    // ✅ Show edit form
     @GetMapping("/edit/{id}")
     public String showEditProductForm(@PathVariable Long id, Model model) {
         Product product = productService.getProductById(id);
         model.addAttribute("product", product);
-        return "edit_product"; // templates/edit_product.html
+        return "edit_product";
     }
 
-    // ✅ Handle Edit Submission
+    // ✅ Handle edit product
     @PostMapping("/edit/{id}")
     public String updateProduct(
             @PathVariable Long id,
@@ -99,13 +97,20 @@ public class AdminProductController {
 
                 product.setImagePath("/uploads/" + fileName);
             } catch (IOException e) {
-                e.printStackTrace();
-                throw new RuntimeException("Failed to save image");
+                throw new RuntimeException("Failed to save image", e);
             }
         }
 
         productService.saveProduct(product);
-        return "redirect:/products";
+        return "redirect:/admin";
+    }
+
+    // ✅ Delete product
+    @PostMapping("/delete/{id}")
+    public String deleteProduct(@PathVariable Long id) {
+        productService.deleteProductById(id);
+        return "redirect:/admin";
     }
 }
+
 

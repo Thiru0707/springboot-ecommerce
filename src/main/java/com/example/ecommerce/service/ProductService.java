@@ -2,16 +2,16 @@ package com.example.ecommerce.service;
 
 import com.example.ecommerce.model.Product;
 import com.example.ecommerce.repository.ProductRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class ProductService {
 
-    @Autowired
-    private ProductRepository productRepository;
+    private final ProductRepository productRepository;
 
     public Product saveProduct(Product product) {
         return productRepository.save(product);
@@ -27,7 +27,7 @@ public class ProductService {
         return productRepository.save(product);
     }
 
-    public void deleteProduct(Long id) {
+    public void deleteProduct(Long id) {   // ✅ rename to match controller
         productRepository.deleteById(id);
     }
 
@@ -44,3 +44,4 @@ public class ProductService {
                 .orElseThrow(() -> new RuntimeException("Product not found"));
     }
 }
+
