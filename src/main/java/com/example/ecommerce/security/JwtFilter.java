@@ -30,17 +30,35 @@ public class JwtFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
 
+        String path = request.getServletPath();
+
+        // ✅ Skip JWT filtering for public routes
+        if (path.startsWith("/auth") ||
+            path.startsWith("/swagger") ||
+            path.startsWith("/v3/api-docs") ||
+            path.startsWith("/uploads") ||
+            path.startsWith("/css") ||
+            path.startsWith("/js") ||
+            path.equals("/") ||
+            path.startsWith("/products") ||
+            path.startsWith("/cart") ||
+            path.startsWith("/checkout")) {
+
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         final String authHeader = request.getHeader("Authorization");
         String username = null;
         String token = null;
 
-        // Extract token and username
+        // ✅ Extract token and username
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             token = authHeader.substring(7);
             username = jwtUtil.extractUsername(token);
         }
 
-        // Validate token and set authentication
+        // ✅ Validate token and set authentication
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
             if (jwtUtil.validateToken(token, userDetails)) {
