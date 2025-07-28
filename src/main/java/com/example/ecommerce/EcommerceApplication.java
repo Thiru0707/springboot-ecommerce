@@ -1,4 +1,3 @@
-// package: com.example.ecommerce
 package com.example.ecommerce;
 
 import org.springframework.boot.SpringApplication;
@@ -9,5 +8,6 @@ public class EcommerceApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(EcommerceApplication.class, args);
+        System.out.println("✅ Application started on Railway 🚀");
     }
 }
