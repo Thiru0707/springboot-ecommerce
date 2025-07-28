@@ -1,10 +1,8 @@
 package com.example.ecommerce.controller;
 
 import com.example.ecommerce.model.Cart;
-import com.example.ecommerce.model.User;
 import com.example.ecommerce.repository.ProductRepository;
 import com.example.ecommerce.service.CartService;
-import com.example.ecommerce.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -17,7 +15,6 @@ public class ViewController {
 
     private final ProductRepository productRepository;
     private final CartService cartService;
-    private final UserService userService;
 
     @Value("${razorpay.key}")
     private String razorpayKey;
@@ -29,7 +26,7 @@ public class ViewController {
         return "index";
     }
 
-    // Product list (with search)
+    // Product list (with optional search)
     @GetMapping("/products")
     public String listProducts(@RequestParam(value = "search", required = false) String search, Model model) {
         if (search != null && !search.trim().isEmpty()) {
@@ -48,7 +45,7 @@ public class ViewController {
         return "cart";
     }
 
-    // Checkout
+    // Checkout page
     @GetMapping("/checkout")
     public String checkout(Model model) {
         Cart cart = cartService.getCartForCurrentUser();
@@ -56,15 +53,6 @@ public class ViewController {
         model.addAttribute("razorpayKey", razorpayKey);
         return "checkout";
     }
-
-    // Profile
-    @GetMapping("/profile")
-    public String viewProfile(Model model) {
-        User user = userService.getCurrentUser();
-        model.addAttribute("user", user);
-        return "profile";
-    }
 }
-
 
 

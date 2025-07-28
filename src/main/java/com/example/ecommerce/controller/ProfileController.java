@@ -14,6 +14,7 @@ public class ProfileController {
 
     private final UserService userService;
 
+    // View profile
     @GetMapping
     public String viewProfile(Model model) {
         User user = userService.getCurrentUser();
@@ -21,9 +22,11 @@ public class ProfileController {
         return "profile";
     }
 
+    // Update profile
     @PostMapping("/update")
     public String updateProfile(@ModelAttribute User updatedUser) {
         userService.updateProfile(updatedUser);
         return "redirect:/profile?success";
     }
 }
+
