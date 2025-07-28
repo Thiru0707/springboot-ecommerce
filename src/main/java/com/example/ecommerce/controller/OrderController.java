@@ -18,24 +18,24 @@ public class OrderController {
     private final OrderService orderService;
     private final UserService userService;
 
-    // ✅ User: view own orders page
+    // Current user's orders
     @GetMapping("/orders")
     public String myOrders(Model model) {
         User user = userService.getCurrentUser();
         List<Order> orders = orderService.getOrders(user);
         model.addAttribute("orders", orders);
-        return "orders"; // templates/orders.html
+        return "orders";
     }
 
-    // ✅ User: view single order details page
+    // Order details
     @GetMapping("/orders/{id}")
     public String viewOrder(@PathVariable Long id, Model model) {
         Order order = orderService.getOrderById(id);
         model.addAttribute("order", order);
-        return "order_details"; // templates/order_details.html
+        return "order_details";
     }
 
-    // ✅ Optional: REST API - place order (for AJAX)
+    // REST: place order
     @PostMapping("/api/orders/place")
     @ResponseBody
     public Order placeOrder(@RequestParam String paymentId) {
@@ -43,7 +43,7 @@ public class OrderController {
         return orderService.placeOrder(user, paymentId);
     }
 
-    // ✅ Optional: REST API - get user's orders as JSON
+    // REST: get user's orders as JSON
     @GetMapping("/api/orders")
     @ResponseBody
     public List<Order> getOrders() {
@@ -51,4 +51,5 @@ public class OrderController {
         return orderService.getOrders(user);
     }
 }
+
 
