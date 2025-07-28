@@ -18,7 +18,7 @@ public class OrderController {
     private final OrderService orderService;
     private final UserService userService;
 
-    // ✅ View current user's orders (HTML page)
+    // ✅ User: view own orders page
     @GetMapping("/orders")
     public String myOrders(Model model) {
         User user = userService.getCurrentUser();
@@ -27,7 +27,7 @@ public class OrderController {
         return "orders"; // templates/orders.html
     }
 
-    // ✅ View details of single order
+    // ✅ User: view single order details page
     @GetMapping("/orders/{id}")
     public String viewOrder(@PathVariable Long id, Model model) {
         Order order = orderService.getOrderById(id);
@@ -35,15 +35,7 @@ public class OrderController {
         return "order_details"; // templates/order_details.html
     }
 
-    // ✅ Admin: view all orders (HTML page)
-    @GetMapping("/admin/orders")
-    public String adminOrders(Model model) {
-        List<Order> orders = orderService.getAllOrders();
-        model.addAttribute("orders", orders);
-        return "admin_orders"; // templates/admin_orders.html
-    }
-
-    // ✅ REST API: Place order (useful for AJAX / frontend JS)
+    // ✅ Optional: REST API - place order (for AJAX)
     @PostMapping("/api/orders/place")
     @ResponseBody
     public Order placeOrder(@RequestParam String paymentId) {
@@ -51,7 +43,7 @@ public class OrderController {
         return orderService.placeOrder(user, paymentId);
     }
 
-    // ✅ REST API: Get current user's orders as JSON
+    // ✅ Optional: REST API - get user's orders as JSON
     @GetMapping("/api/orders")
     @ResponseBody
     public List<Order> getOrders() {
