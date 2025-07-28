@@ -1,4 +1,3 @@
-// package: com.example.ecommerce.config
 package com.example.ecommerce.config;
 
 import io.swagger.v3.oas.models.*;
@@ -10,6 +9,7 @@ import org.springframework.context.annotation.*;
 public class SwaggerConfig {
 
     @Bean
+    @Primary  // ✅ Add this
     public OpenAPI ecommerceOpenAPI() {
         return new OpenAPI()
                 .info(new Info()
@@ -26,3 +26,4 @@ public class SwaggerConfig {
                 .build();
     }
 }
+
