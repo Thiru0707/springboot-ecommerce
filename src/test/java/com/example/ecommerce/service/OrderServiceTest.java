@@ -34,4 +34,13 @@ public class OrderServiceTest {
         assertEquals(1, orders.size());
         assertEquals(100L, orders.get(0).getId());
     }
+
+    @Test
+    void testGetOrderById() {
+        Order order = new Order(); order.setId(200L);
+        Mockito.when(orderRepository.findById(200L)).thenReturn(java.util.Optional.of(order));
+
+        Order found = orderService.getOrderById(200L);
+        assertEquals(200L, found.getId());
+    }
 }

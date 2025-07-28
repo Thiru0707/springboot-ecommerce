@@ -20,23 +20,28 @@ import java.nio.file.Paths;
 public class AdminProductController {
 
     private final ProductService productService;
-
     private static final String UPLOAD_DIR = "src/main/resources/static/uploads/";
 
-    // ✅ Admin dashboard (shows all products)
+    /**
+     * Admin dashboard: list all products
+     */
     @GetMapping
     public String adminDashboard(Model model) {
         model.addAttribute("products", productService.getAllProducts());
-        return "admin_products";
+        return "admin_products"; // templates/admin_products.html
     }
 
-    // ✅ Show add form
+    /**
+     * Show form to add new product
+     */
     @GetMapping("/add")
     public String showAddProductForm() {
         return "add_product";
     }
 
-    // ✅ Handle add product
+    /**
+     * Handle add product POST
+     */
     @PostMapping("/add")
     public String handleAddProduct(
             @RequestParam String name,
@@ -49,13 +54,13 @@ public class AdminProductController {
         product.setDescription(description);
         product.setPrice(BigDecimal.valueOf(price));
 
+        // Save image
         if (imageFile != null && !imageFile.isEmpty()) {
             try {
                 String fileName = System.currentTimeMillis() + "_" + imageFile.getOriginalFilename();
                 Path filePath = Paths.get(UPLOAD_DIR + fileName);
                 Files.createDirectories(filePath.getParent());
                 imageFile.transferTo(filePath.toFile());
-
                 product.setImagePath("/uploads/" + fileName);
             } catch (IOException e) {
                 throw new RuntimeException("Failed to save image", e);
@@ -66,7 +71,9 @@ public class AdminProductController {
         return "redirect:/admin";
     }
 
-    // ✅ Show edit form
+    /**
+     * Show edit form for product
+     */
     @GetMapping("/edit/{id}")
     public String showEditProductForm(@PathVariable Long id, Model model) {
         Product product = productService.getProductById(id);
@@ -74,7 +81,9 @@ public class AdminProductController {
         return "edit_product";
     }
 
-    // ✅ Handle edit product
+    /**
+     * Handle update product POST
+     */
     @PostMapping("/edit/{id}")
     public String updateProduct(
             @PathVariable Long id,
@@ -94,7 +103,6 @@ public class AdminProductController {
                 Path filePath = Paths.get(UPLOAD_DIR + fileName);
                 Files.createDirectories(filePath.getParent());
                 imageFile.transferTo(filePath.toFile());
-
                 product.setImagePath("/uploads/" + fileName);
             } catch (IOException e) {
                 throw new RuntimeException("Failed to save image", e);
@@ -105,12 +113,12 @@ public class AdminProductController {
         return "redirect:/admin";
     }
 
-    // ✅ Delete product
+    /**
+     * Delete product by ID
+     */
     @PostMapping("/delete/{id}")
     public String deleteProduct(@PathVariable Long id) {
-        productService.deleteProductById(id);
+        productService.deleteProductById(id); // use correct method name
         return "redirect:/admin";
     }
 }
-
-
