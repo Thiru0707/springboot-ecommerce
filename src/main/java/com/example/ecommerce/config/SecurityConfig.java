@@ -47,13 +47,14 @@ public class SecurityConfig {
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(
-                    "/api/auth/**",                         // ✅ Allow login and registration
-                    "/swagger-ui.html", "/swagger-ui/**",   // ✅ Swagger docs
+                    "/auth/**",                             // ✅ Auth endpoints
+                    "/swagger-ui.html", "/swagger-ui/**",   // ✅ Swagger
                     "/v3/api-docs/**",
-                    "/uploads/**", "/css/**", "/js/**"      // ✅ Static files
+                    "/uploads/**", "/css/**", "/js/**",     // ✅ Static resources
+                    "/", "/products", "/cart", "/checkout"  // ✅ Thymeleaf views
                 ).permitAll()
-                .requestMatchers("/admin/**").hasRole("ADMIN") // ✅ Admin-only routes
-                .anyRequest().authenticated()              // 🔐 All others require login
+                .requestMatchers("/admin/**").hasRole("ADMIN") // ✅ Admin routes
+                .anyRequest().authenticated()                 // 🔐 Secure all others
             )
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
