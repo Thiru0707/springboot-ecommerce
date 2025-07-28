@@ -2,41 +2,47 @@ package com.example.ecommerce.service;
 
 import com.example.ecommerce.model.User;
 import com.example.ecommerce.repository.UserRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.mockito.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.*;
 
-@SpringBootTest
 class UserServiceTest {
-    @Mock UserRepository userRepo;
-    @InjectMocks UserService userService;
+
+    @Mock private UserRepository userRepo;
+    @Mock private PasswordEncoder passwordEncoder;
+
+    @InjectMocks private UserService userService;
+
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
+    }
 
     @Test
     void testGetUserByEmail() {
         User user = new User(); user.setEmail("test@mail.com");
-        Mockito.when(userRepo.findByEmail("test@mail.com")).thenReturn(Optional.of(user));
+        when(userRepo.findByEmail("test@mail.com")).thenReturn(Optional.of(user));
         assertEquals("test@mail.com", userService.getUserByEmail("test@mail.com").getEmail());
     }
 
     @Test
     void testGetCurrentUser() {
         User user = new User(); user.setUsername("john");
-        Mockito.when(userRepo.findByUsername("john")).thenReturn(Optional.of(user));
+        when(userRepo.findByUsername("john")).thenReturn(Optional.of(user));
 
-        // mock SecurityContextHolder
-        Authentication auth = Mockito.mock(Authentication.class);
-        Mockito.when(auth.getName()).thenReturn("john");
-        SecurityContext context = Mockito.mock(SecurityContext.class);
-        Mockito.when(context.getAuthentication()).thenReturn(auth);
+        Authentication auth = mock(Authentication.class);
+        when(auth.getName()).thenReturn("john");
+        SecurityContext context = mock(SecurityContext.class);
+        when(context.getAuthentication()).thenReturn(auth);
         SecurityContextHolder.setContext(context);
 
         User result = userService.getCurrentUser();
@@ -48,18 +54,36 @@ class UserServiceTest {
         User existing = new User(); existing.setName("Old"); existing.setEmail("old@mail.com");
         User updated = new User(); updated.setName("New"); updated.setEmail("new@mail.com");
 
-        Mockito.when(userRepo.findByUsername("john")).thenReturn(Optional.of(existing));
+        when(userRepo.findByUsername("john")).thenReturn(Optional.of(existing));
 
-        Authentication auth = Mockito.mock(Authentication.class);
-        Mockito.when(auth.getName()).thenReturn("john");
-        SecurityContext context = Mockito.mock(SecurityContext.class);
-        Mockito.when(context.getAuthentication()).thenReturn(auth);
+        Authentication auth = mock(Authentication.class);
+        when(auth.getName()).thenReturn("john");
+        SecurityContext context = mock(SecurityContext.class);
+        when(context.getAuthentication()).thenReturn(auth);
         SecurityContextHolder.setContext(context);
 
         userService.updateProfile(updated);
 
-        Mockito.verify(userRepo).save(existing);
+        verify(userRepo).save(existing);
         assertEquals("New", existing.getName());
         assertEquals("new@mail.com", existing.getEmail());
     }
+
+    @Test
+    void testRegisterUser() {
+        User user = new User();
+        user.setUsername("newuser");
+        user.setPassword("plainPassword");
+
+        when(passwordEncoder.encode("plainPassword")).thenReturn("encodedPassword");
+        when(userRepo.save(any(User.class))).thenAnswer(i -> i.getArguments()[0]);
+
+        User savedUser = userService.registerUser(user);
+
+        assertEquals("encodedPassword", savedUser.getPassword());
+        assertEquals("ROLE_USER", savedUser.getRole());
+        verify(userRepo).save(user);
+    }
 }
+
+

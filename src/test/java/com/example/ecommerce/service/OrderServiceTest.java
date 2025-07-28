@@ -1,46 +1,88 @@
+
 package com.example.ecommerce.service;
 
-import com.example.ecommerce.model.Order;
-import com.example.ecommerce.model.User;
-import com.example.ecommerce.repository.OrderRepository;
+import com.example.ecommerce.model.*;
+import com.example.ecommerce.repository.*;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.mockito.*;
 
-import java.util.Collections;
-import java.util.List;
+import java.math.BigDecimal;
+import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
-@SpringBootTest
-public class OrderServiceTest {
+class OrderServiceTest {
 
+    @Mock private CartRepository cartRepo;
+    @Mock private OrderRepository orderRepo;
+    @Mock private OrderItemRepository orderItemRepo;
+    @Mock private CartItemRepository cartItemRepo;
     @Mock private UserService userService;
-    @Mock private OrderRepository orderRepository;
 
     @InjectMocks private OrderService orderService;
 
+    @BeforeEach
+    void setup() {
+        MockitoAnnotations.openMocks(this);
+    }
+
     @Test
-    void testGetOrdersForCurrentUser() {
-        User user = new User(); user.setId(1L);
-        Order order = new Order(); order.setId(100L);
+    void testPlaceOrderSuccess() {
+        User user = new User();
+        Product product = new Product();
+        product.setPrice(BigDecimal.valueOf(500));
 
-        Mockito.when(userService.getCurrentUser()).thenReturn(user);
-        Mockito.when(orderRepository.findByUser(user)).thenReturn(Collections.singletonList(order));
+        CartItem item = new CartItem();
+        item.setProduct(product);
+        item.setQuantity(2);
 
-        List<Order> orders = orderService.getOrdersForCurrentUser();
-        assertEquals(1, orders.size());
-        assertEquals(100L, orders.get(0).getId());
+        Cart cart = new Cart();
+        cart.setUser(user);
+        cart.setCartItems(List.of(item));
+
+        when(cartRepo.findByUser(user)).thenReturn(Optional.of(cart));
+        when(orderRepo.save(any(Order.class))).thenAnswer(i -> i.getArguments()[0]);
+
+        Order order = orderService.placeOrder(user, "pay123");
+
+        assertEquals(BigDecimal.valueOf(1000), order.getTotalAmount());
+        verify(orderItemRepo).saveAll(anyList());
+        verify(cartItemRepo).deleteAll(cart.getCartItems());
+    }
+
+    @Test
+    void testPlaceOrderEmptyCart() {
+        User user = new User();
+        Cart cart = new Cart();
+        cart.setCartItems(Collections.emptyList());
+
+        when(cartRepo.findByUser(user)).thenReturn(Optional.of(cart));
+
+        Exception ex = assertThrows(RuntimeException.class, () ->
+            orderService.placeOrder(user, "pay123"));
+
+        assertEquals("Cart is empty", ex.getMessage());
     }
 
     @Test
     void testGetOrderById() {
-        Order order = new Order(); order.setId(200L);
-        Mockito.when(orderRepository.findById(200L)).thenReturn(java.util.Optional.of(order));
+        Order order = new Order();
+        order.setId(1L);
+        when(orderRepo.findById(1L)).thenReturn(Optional.of(order));
 
-        Order found = orderService.getOrderById(200L);
-        assertEquals(200L, found.getId());
+        Order result = orderService.getOrderById(1L);
+        assertEquals(1L, result.getId());
+    }
+
+    @Test
+    void testGetOrdersByUser() {
+        User user = new User();
+        Order order = new Order();
+        when(orderRepo.findByUser(user)).thenReturn(List.of(order));
+
+        List<Order> orders = orderService.getOrders(user);
+        assertEquals(1, orders.size());
     }
 }

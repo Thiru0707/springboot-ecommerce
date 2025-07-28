@@ -47,13 +47,16 @@ public class SecurityConfig {
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(
-                    "/", "/auth/**", "/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**",
-                    "/products", "/api/**", "/uploads/**", "/register", "/login", "/css/**"
+                    "/api/auth/**",                         // ✅ Allow login and registration
+                    "/swagger-ui.html", "/swagger-ui/**",   // ✅ Swagger docs
+                    "/v3/api-docs/**",
+                    "/uploads/**", "/css/**", "/js/**"      // ✅ Static files
                 ).permitAll()
-                .requestMatchers("/admin/**").hasRole("ADMIN")
-                .anyRequest().authenticated()
+                .requestMatchers("/admin/**").hasRole("ADMIN") // ✅ Admin-only routes
+                .anyRequest().authenticated()              // 🔐 All others require login
             )
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+
         return http.build();
     }
 }
