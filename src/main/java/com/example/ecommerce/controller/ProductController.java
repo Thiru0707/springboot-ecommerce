@@ -17,57 +17,44 @@ public class ProductController {
     @Autowired
     private ProductService productService;
 
-    /**
-     * Public: get all products
-     */
+    // Public: get all products
     @GetMapping
     public List<Product> getAllProducts() {
         return productService.getAllProducts();
     }
 
-    /**
-     * Public: search products by keyword
-     */
+    // Public: search
     @GetMapping("/search")
     public List<Product> searchProducts(@RequestParam String keyword) {
         return productService.searchProducts(keyword);
     }
 
-    /**
-     * Public: get single product by ID
-     */
+    // Public: get single product
     @GetMapping("/{id}")
     public ResponseEntity<Product> getProductById(@PathVariable Long id) {
         Product product = productService.getProductById(id);
         return product != null ? ResponseEntity.ok(product) : ResponseEntity.notFound().build();
     }
 
-    /**
-     * Admin: create product
-     */
+    // Admin: create
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Product> createProduct(@Valid @RequestBody Product product) {
         return ResponseEntity.ok(productService.saveProduct(product));
     }
 
-    /**
-     * Admin: update product
-     */
+    // Admin: update
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Product> updateProduct(@PathVariable Long id, @Valid @RequestBody Product updated) {
         return ResponseEntity.ok(productService.updateProduct(id, updated));
     }
 
-    /**
-     * Admin: delete product
-     */
+    // Admin: delete
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> deleteProduct(@PathVariable Long id) {
-        productService.deleteProductById(id); // ✅ correct method name
+        productService.deleteProductById(id);
         return ResponseEntity.ok("Product deleted.");
     }
 }
-
