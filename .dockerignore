@@ -1,0 +1,13 @@
+target
+.git
+.gitignore
+Dockerfile
+Procfile
+README.md
+*.iml
+.idea
+*.md
+*.log
+*.zip
+*.env
+uploads
