@@ -48,15 +48,16 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
+                // Public endpoints
                 .requestMatchers(
-                    "/auth/**",                             // ✅ Auth endpoints
-                    "/swagger-ui.html", "/swagger-ui/**",   // ✅ Swagger
-                    "/v3/api-docs/**",
-                    "/uploads/**", "/css/**", "/js/**",     // ✅ Static resources
-                    "/", "/products", "/cart", "/checkout"  // ✅ Thymeleaf views
+                    "/", "/auth/**",
+                    "/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**",
+                    "/uploads/**", "/css/**", "/js/**"
                 ).permitAll()
-                .requestMatchers("/admin/**").hasRole("ADMIN") // ✅ Admin routes
-                .anyRequest().authenticated()                 // 🔐 Secure all others
+                // Admin endpoints
+                .requestMatchers("/admin/**").hasRole("ADMIN")
+                // All others require login
+                .anyRequest().authenticated()
             )
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
@@ -67,7 +68,7 @@ public class SecurityConfig {
     public HttpFirewall allowUrlEncodedDoubleSlashHttpFirewall() {
         StrictHttpFirewall firewall = new StrictHttpFirewall();
         firewall.setAllowUrlEncodedDoubleSlash(true);
-        firewall.setAllowBackSlash(true); // optional
+        firewall.setAllowBackSlash(true);
         return firewall;
     }
 
