@@ -27,13 +27,9 @@ public class ProductService {
         return productRepository.save(product);
     }
 
-    public void deleteProduct(Long id) {   // ✅ rename to match controller
-        productRepository.deleteById(id);
-    }
     public void deleteProductById(Long id) {
         productRepository.deleteById(id);
     }
-
 
     public List<Product> getAllProducts() {
         return productRepository.findAll();
@@ -48,4 +44,3 @@ public class ProductService {
                 .orElseThrow(() -> new RuntimeException("Product not found"));
     }
 }
-

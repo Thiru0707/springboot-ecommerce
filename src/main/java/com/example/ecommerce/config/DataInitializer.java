@@ -29,7 +29,6 @@ public class DataInitializer implements CommandLineRunner {
             userRepository.save(admin);
             System.out.println("✅ Default admin user created: admin / admin123");
         }
-
         if (userRepository.findByUsername("user").isEmpty()) {
             User user = User.builder()
                 .username("user")
