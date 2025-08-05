@@ -3,8 +3,7 @@ package com.example.ecommerce.security;
 import com.example.ecommerce.util.JwtUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.*;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.*;
@@ -26,54 +25,27 @@ public class JwtFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request,
-                                    HttpServletResponse response,
-                                    FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain chain)
+            throws ServletException, IOException {
 
-        String path = request.getServletPath();
+        final String authHeader = req.getHeader("Authorization");
+        String username = null, token = null;
 
-        // ✅ Skip JWT filtering for public routes
-        if (path.startsWith("/auth") ||
-            path.startsWith("/swagger") ||
-            path.startsWith("/v3/api-docs") ||
-            path.startsWith("/uploads") ||
-            path.startsWith("/css") ||
-            path.startsWith("/js") ||
-            path.equals("/") ||
-            path.startsWith("/products") ||
-            path.startsWith("/cart") ||
-            path.startsWith("/checkout")) {
-
-            filterChain.doFilter(request, response);
-            return;
-        }
-
-        final String authHeader = request.getHeader("Authorization");
-        String username = null;
-        String token = null;
-
-        // ✅ Extract token and username
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             token = authHeader.substring(7);
             username = jwtUtil.extractUsername(token);
         }
 
-        // ✅ Validate token and set authentication
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-            if (jwtUtil.validateToken(token, userDetails)) {
-                UsernamePasswordAuthenticationToken authenticationToken =
-                        new UsernamePasswordAuthenticationToken(
-                                userDetails, null, userDetails.getAuthorities());
-
-                authenticationToken.setDetails(
-                        new WebAuthenticationDetailsSource().buildDetails(request));
-
-                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+            UserDetails user = userDetailsService.loadUserByUsername(username);
+            if (jwtUtil.validateToken(token, user)) {
+                var auth = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
+                auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(req));
+                SecurityContextHolder.getContext().setAuthentication(auth);
             }
         }
 
-        filterChain.doFilter(request, response);
+        chain.doFilter(req, res);
     }
 }
 
